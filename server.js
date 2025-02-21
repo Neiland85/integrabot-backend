@@ -1,18 +1,30 @@
 require('dotenv').config(); // Cargar variables de entorno
 
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const config = require('./config/env');
 
 const contactoRoutes = require('./routes/contacto');
 const chatRoutes = require('./routes/chat');
 
 const app = express();
 
+// 📌 Cargar variables de entorno
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI;
+const CORS_ORIGIN = process.env.CORS_ORIGIN;
+
+if (!MONGO_URI) {
+  console.error("❌ ERROR: MONGO_URI no está definido en .env");
+  process.exit(1); // Salir del proceso si falta la URI de MongoDB
+}
+
+console.log("🔗 URI de MongoDB:", MONGO_URI);
+
 // 🔒 Seguridad
-app.use(cors({ origin: config.corsOrigin }));
+app.use(cors({ origin: CORS_ORIGIN }));
 app.use(helmet());
 app.use(express.json());
 
@@ -24,6 +36,18 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+// 🏆 Conectar a MongoDB
+mongoose
+  .connect(MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ Conectado a MongoDB"))
+  .catch((err) => {
+    console.error("❌ Error al conectar a MongoDB:", err);
+    process.exit(1); // Salir del proceso si la conexión falla
+  });
+
 // 🏆 Rutas disponibles
 app.use('/contacto', contactoRoutes);
 app.use('/api/chat', chatRoutes);
@@ -33,15 +57,8 @@ app.get('/', (req, res) => {
   res.send("🚀 Servidor funcionando correctamente 🚀");
 });
 
-// 🔍 Mostrar todas las rutas registradas en consola
-console.log("📌 Rutas registradas:");
-app._router.stack.forEach((r) => {
-  if (r.route?.path) {
-    console.log(`✅ ${r.route.path}`);
-  }
+// 🔥 Iniciar servidor
+app.listen(PORT, () => {
+  console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
 });
 
-// 🔥 Iniciar servidor
-app.listen(config.port, () => {
-  console.log(`✅ Servidor corriendo en http://localhost:${config.port}`);
-});
