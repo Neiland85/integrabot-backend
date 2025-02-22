@@ -28,6 +28,9 @@ app.use(cors({ origin: CORS_ORIGIN }));
 app.use(helmet());
 app.use(express.json());
 
+// 🔥 Configurar `trust proxy` para Vercel
+app.set("trust proxy", 1); 
+
 // 🚀 Protección contra abusos
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minuto
