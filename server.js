@@ -57,8 +57,13 @@ app.get('/', (req, res) => {
   res.send("🚀 Servidor funcionando correctamente 🚀");
 });
 
-// 🔥 Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
-});
+// 🔥 Iniciar servidor solo si no es un módulo de Vercel
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`✅ Servidor corriendo en http://localhost:${PORT}`);
+  });
+}
+
+// 🔥 Exportar app para Vercel
+module.exports = app;
 
