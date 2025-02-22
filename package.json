@@ -34,8 +34,7 @@
     "path-to-regexp": "^8.2.0",
     "semver": "^7.7.1",
     "tar": "^6.2.1",
-    "undici": "^7.3.0",
-    "vercel": "^32.3.0"
+    "undici": "^7.3.0"
   },
   "devDependencies": {
     "eslint": "^8.48.0",
@@ -47,3 +46,4 @@
     "node": "20"
   }
 }
+
